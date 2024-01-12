@@ -27,4 +27,23 @@ ${RUN} ${DIR} bpp partN
 
 ## move list of taxa IDs and output to {WD}
 mv ${DIR}/species_names.txt ${WD}
-mv ${DIR}/phylip_format ${WD}
+mv ${DIR}/phylip_format/01_alignment_all_loci/bpp_all_loci.aln ${WD}/eurytoma_phylip.txt
+
+## make a backup copy of output
+cp ${WD}/eurytoma_phylip.txt ${WD}/backup-eurytoma_phylip.txt
+
+## remove the rest of the output to save space
+rm -r ${DIR}/phylip_format
+
+
+## the format for the taxon IDs in BPP input is slightly different than my file
+## so I'm adding the ID tags (^[nr])
+
+COUNT=1
+
+for NAME in $(cat species_names.txt); do
+
+    sed -i s/${NAME}/${NAME}\^${COUNT}/g eurytoma_phylip.txt
+    ((COUNT++))
+
+done
