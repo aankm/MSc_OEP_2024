@@ -32,5 +32,15 @@ Gene trees from filtered gene assemblies <br/>
 
 ### Species delimitation and phylogeny with BPP <br/>
 Flouri *et al*. (2020) (https://github.com/bpp/bpp) <br/>
-> bpp_A11/
+
+Prepare input alignments (https://github.com/sabifo4/fasta-phylip-partitions) <br/>
+> bpp_A11/convert2phylip.sh
+
+BPP control file with analysis parameters <br/>
+> bpp_A11/run_BPP.sh
+
+shell script to execute BPP <br/>
+> run_BPP.sh
+
+
 
