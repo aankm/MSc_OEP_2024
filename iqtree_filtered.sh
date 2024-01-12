@@ -9,7 +9,9 @@
 #$ -pe smp 56 
 
 
-## lines 14-
+## lines 21-26: species tree from concatenated loci
+## lines 30-37: separate gene trees for each locus
+## NB comment out the irrelevant section before running
 
 
 ## Load module
