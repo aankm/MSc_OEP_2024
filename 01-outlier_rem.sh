@@ -15,7 +15,7 @@ cd /share/pool/gbol3_eurytomidae_wgs/eury_filtering/aa_results/
 
 ## path to OliInSeq executable
 run_outlier_removal="/share/pool/gbol3_eurytomidae_wgs/eury_filtering/scripts/remove_outlier_sequences-v0.9.5-dist/Remove-Outlier-Sequences-v0.9.5"
-## path to trimmed alignments
+## path to input (trimmed gene alignments)
 DIR="/share/pool/gbol3_eurytomidae_wgs/eury_buscophy/results/busco/phylo/busco_aa_alignments_trim"
 
 
