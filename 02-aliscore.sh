@@ -4,7 +4,7 @@
 #$ -S /bin/bash
 #$ -j n
 #$ -N eu_aliscore
-#$ -M a.ankermann@leibniz-lib.de
+#$ -M [EMAIL]
 #$ -m be
 
 
