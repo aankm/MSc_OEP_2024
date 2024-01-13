@@ -1,4 +1,4 @@
-## <p align="center"> Shaping Diversity: A Look into Species Limits in the Eurytoma robusta Species Group (Chalcidoidea: Eurytomidae) Using Genome Sequence Data
+## <p align="center"> Shaping Diversity: A Look into Species Limits in the *Eurytoma robusta* Species Group (Chalcidoidea: Eurytomidae) Using Genome Sequence Data
 
 
 <p align="center"> Scripts and supplementary information for Thesis
