@@ -38,15 +38,18 @@ ASAP_cols <- c("1"="darkslategray4", "9"="lightblue3", "10"="magenta", "11"="spr
               "2"="peru", "3"="slateblue4", "4"="red2", "5"="darkorange2", 
               "6"="turquoise2", "7"="lightcoral", "8"="yellowgreen", "OG"="black")
 
-MT_cols <- c("f-A"="olivedrab3", "f-A/N"="darkgreen", "male"="grey70", "f-D"="orangered", "f-L"="slateblue4", 
-             "f-B"="darkmagenta", "f-N"="maroon2", "f-F"="turquoise3", "f-M/G'"="sienna4", 
-             "f-G"="firebrick4", "f-P"="gold2", "f-C"="steelblue3", "OG"="black")
+female_cols <- c("f-A"="olivedrab3", "f-A/N"="darkgreen", "male"="grey70", "f-D"="orangered", "f-L"="slateblue4", 
+             "f-B"="darkmagenta", "f-N"="maroon2", "f-F"="turquoise2", "f-M/G'"="chocolate4", 
+             "f-G"="firebrick3", "f-P"="gold2", "f-C"="steelblue3", "OG"="black")
 
 mPTP_cols <- c("1"="goldenrod3", "10"="#CEAC85", "4"="slateblue4", "7"="#8FE660", 
                 "12"="#D65388", "3"="#DED749", "6"="#77A3DB", "8"="magenta", 
                 "14"="darkorchid3", "5"="firebrick2", "9"="darkolivegreen", "11"="#73D5D6", 
                 "13"="thistle4", "2"="#77DEA3", "OG"="black")
 
+male_cols <- c("m-a"="goldenrod1","m-c.1"="maroon2","m-c.2"="aquamarine4","m-e"="forestgreen",
+               "m-f"="khaki4","m-g"="orange3","m-h"="saddlebrown","m-j"="orchid3",
+               "m-i"="red2","m-g/j"="royalblue3","female"="grey88","OG"="black")
 
 # plot base trees with node numbers (admin)
 ggplot(iq_coi) %<+% analeu +
@@ -240,16 +243,40 @@ ggsave("PATH/FILE.png", width=40, height=60, units="cm")
 analeu$fMT_sp <- car::recode(analeu$female_cols, "'grey88'='male'; else=analeu$MT")
 analeu$fMT_sp <- as.factor(analeu$fMT_sp)
 
+# create column for only male MTs
+analeu$mMT_sp <- car::recode(analeu$male_cols, "'grey88'='female'; else=analeu$MT")
+analeu$mMT_sp <- as.factor(analeu$mMT_sp)
+
 df <- data.frame(node=c(164,116,133,129,153,105,137,125,146,152,1)) # parent nodes of putative species
 
+## plot females
 ggplot(iq_coi) %<+% analeu +
   geom_tree() +
   geom_tippoint(size=6, aes(x, y, color=fMT_sp, shape=sex)) +
   geom_tiplab(offset=0.01, size=5) +
-  scale_color_manual(values=MT_cols, guide="none") +
+  scale_color_manual(values=female_cols, guide="none") +
   geom_nodelab(size=5, hjust=1.5, vjust=-0.5, color="black") +
   
   geom_hilight(data=df, aes(node=node), colour="grey50", linetype=2, fill=NA, extendto=0.235) +  # add boxes around putative species
+  
+  guides(color="none") +
+  theme_tree() +
+  theme(legend.position=c(0.1,0.9), legend.text=element_text(size=20), legend.title=element_text(size=20)) +
+  xlim(0, 0.25) +
+  ylim(0, 98)
+
+
+ggsave("PATH/FILE.png", width=40, height=60, units="cm")
+
+## plot males
+ggplot(bar_boot) %<+% analeu +  
+  geom_tree() +
+  geom_tippoint(size=6, aes(x, y, color=mMT_sp, shape=sex)) +
+  geom_tiplab(offset=0.01, size=5) +
+  scale_color_manual(values=male_cols, guide="none") +
+  geom_nodelab(size=5, hjust=1.5, vjust=-0.5, color="black") +
+  
+  geom_hilight(data=df, aes(node=node), colour="grey50", linetype=2, fill=NA, extendto=0.235) +
   
   guides(color="none") +
   theme_tree() +
@@ -451,19 +478,22 @@ astral.data@nodeData$q3 <- car::recode(astral.data@nodeData$q1, "NA=NA; else=ast
 # start save to .png
 png(file="PATH/FILE.png", 
     width=5000, height=7500)
-# plot
-AstralPlane::astralProjection(astral.plane = astral.data,
-                 local.posterior = TRUE,  # label nodes with posterior probability (pp1)
-                 pie.plot = TRUE,  # plot quartet frequencies as pie charts
-                 pie.data = "qscore",  # use relative quartet frequencies instead of absolute count ("genetree")
-                 pie.colors = c("#81A88D", "#DC863B", "#046C9A"),
-                 node.color.text = c("black"),
-                 node.color.bg = c("white"),
-                 node.label.size = 5,
-                 tip.label.size = 7,
-                 pie.chart.size = .75)
 
-arrows(x0=4.6, y0=94.4, x1=4.6, y1=93.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)  # add bars for putative species
+## this is a customisation of the AstralPlane::astralProjection function
+## just to get the edge.lwd option, as the magnification was making the default tree unreadable
+astralProject(astral.plane = astral.data,
+              local.posterior = TRUE,
+              pie.plot = TRUE,
+              pie.data = "qscore",
+              pie.colors = c("#81A88D", "#DC863B", "#046C9A"),
+              node.color.text = c("black"),
+              node.color.bg = c("white"),
+              edge.lwd = 7, 
+              node.label.size = 6,
+              tip.label.size = 7,
+              pie.chart.size = .75)
+
+arrows(x0=4.6, y0=94.4, x1=4.6, y1=93.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)
 arrows(x0=4.6, y0=89.4, x1=4.6, y1=85.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)
 arrows(x0=4.6, y0=85.4, x1=4.6, y1=80.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)
 arrows(x0=4.6, y0=80.4, x1=4.6, y1=76.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)
@@ -477,19 +507,18 @@ arrows(x0=4.6, y0=40.4, x1=4.6, y1=38.6, lty=1, lwd=20, col="grey20", code=3, an
 arrows(x0=4.6, y0=38.4, x1=4.6, y1=26.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)
 arrows(x0=4.6, y0=26.4, x1=4.6, y1=0.6, lty=1, lwd=20, col="grey20", code=3, angle=90, length=0.5)
 
-rect(xleft=1, xright=4.8, ybottom=93.5, ytop=94.5, border="grey30", lty=2)  # add boxes for putative species
-rect(xleft=1, xright=4.8, ybottom=85.5, ytop=89.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=80.5, ytop=85.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=76.5, ytop=80.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=66.5, ytop=76.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=64.5, ytop=66.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=57.5, ytop=64.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=56.5, ytop=57.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=45.5, ytop=56.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=40.5, ytop=45.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=38.5, ytop=40.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=26.5, ytop=38.5, border="grey30", lty=2)
-rect(xleft=1, xright=4.8, ybottom=0.5, ytop=26.5, border="grey30", lty=2)
+rect(xleft=1, xright=4.8, ybottom=93.5, ytop=94.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=85.5, ytop=89.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=80.5, ytop=85.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=76.5, ytop=80.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=66.5, ytop=76.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=64.5, ytop=66.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=57.5, ytop=64.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=56.5, ytop=57.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=45.5, ytop=56.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=40.5, ytop=45.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=38.5, ytop=40.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=26.5, ytop=38.5, border="grey30", lty=2, lwd=5)
+rect(xleft=1, xright=4.8, ybottom=0.5, ytop=26.5, border="grey30", lty=2, lwd=5)
 # end save to .png
 dev.off()
-
